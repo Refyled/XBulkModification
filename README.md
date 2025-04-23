@@ -87,6 +87,8 @@ Les captures d’écran utilisées pour la reconnaissance d’image doivent êtr
 - Les boutons (`retour.png`, `confirmer.png`, `creer.png`)
 - Les messages d’erreur (`erreur.png`)
 
+Attention a bien capturer le même format exact que les images originales
+
 ---
 
 ## 🏁 Utilisation
@@ -119,12 +121,10 @@ Le script est structuré en plusieurs blocs :
 
 - Le script repose entièrement sur l’interface visuelle de Ximi : toute modification d’UI peut nécessiter de refaire les captures d’écran.
 - Le temps de chargement de Ximi varie, les pauses (`Sleep`) sont prévues mais peuvent être ajustées.
-- Le script évite les erreurs en rechargeant une page neutre après chaque traitement.
 
 ---
 
-## 📝 À venir (suggestions)
+## 📝 À venir 
 
 - Interface graphique minimale pour indiquer la progression.
-- Ajout de fichiers logs séparés pour succès/erreurs.
-- Option de test à sec (sans clic final).
+- Script de mise à jour des images.
