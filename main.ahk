@@ -1,27 +1,35 @@
-;only good version
+; -------------------------------------------------------
+; Initialisation
+; -------------------------------------------------------
 
 ; Variables globales pour arreter le script
 ;zoom 110
 CoordMode, Mouse, Screen  ;
 global stopScript := false
-
-; Variables globales pour les chemins
-Global csvFile := "C:\Users\henri\Desktop\AHK\list.csv"
-Global imageDir := "C:\Users\henri\Desktop\AHK\Img\"
-Global logFile := "C:\Users\henri\Desktop\AHK\log.csv"
 Global enableLogging := false ; Permet de toggler le logging
 Global successCount := 0
 Global errorCount := 0
 
 
-; Script AHK pour manipuler un fichier CSV avec des fonctions lire et ecrire
 
-; Verifier si le fichier existe
-if !FileExist(csvFile) {
-    if enableLogging
-        FileAppend, % "Erreur;" A_Now ";Le fichier CSV n'existe pas.`n", logFile
-    ExitApp
-}
+; -------------------------------------------------------
+; Variables à modifier 
+; -------------------------------------------------------
+
+;la liste csv des modifications à effectuer
+Global csvFile := "C:\Users\henri\Desktop\AHK\list.csv"
+;le repertoire des images
+Global imageDir := "C:\Users\henri\Desktop\AHK\Img\"
+;le fichier log (si log est activé il sera créé automatiquement, ne sera pas utilisé sinon)
+Global logFile := "C:\Users\henri\Desktop\AHK\log.csv"
+;lien vers une page d'accueil neutre
+Global neutralLink := "https://app.ximi.xelya.io/N106/List/Client?Mode=List&View=Default"
+;lien vers une page d'édition'
+Global editLink := "https://app.ximi.xelya.io/N106/Details/Intervention/"
+
+; -------------------------------------------------------
+; Logging
+; -------------------------------------------------------
 
 ; Fonction pour ajouter une entree au log
 Log(action, message) {
@@ -36,7 +44,18 @@ Log(action, message) {
     File.Close()
 }
 
-; Fonction pour lire une ligne specifique et retourner les valeurs des colonnes (y, 2) et (y, 3)
+; -------------------------------------------------------
+; Manipulation csv
+; -------------------------------------------------------
+
+; Verifier si le fichier existe
+if !FileExist(csvFile) {
+    if enableLogging
+        FileAppend, % "Erreur;" A_Now ";Le fichier CSV n'existe pas.`n", logFile
+    ExitApp
+}
+
+; Fonction pour lire une ligne specifique y et retourner un tableau contenant les valeur de la colonne (y,1);(y,2);(y;3)...
 Lire(csvFile, ligne) {
     Log("Lecture", "Lecture de la ligne " ligne)
     File := FileOpen(csvFile, "r")
@@ -63,6 +82,8 @@ Lire(csvFile, ligne) {
     Log("Erreur", "La ligne " ligne " n'existe pas dans le fichier CSV")
     ExitApp
 }
+
+; Fonction pour compter les lignes dans le csv
 
 CountLinesInCSV(csvFile) {
     lineCount := 0
@@ -124,7 +145,11 @@ Ecrire(csvFile, ligne, colonne, valeur) {
     File.Close()
 }
 
-; Fonction : Attendre qu'une image apparaisse avec un temps d'attente maximum
+; -------------------------------------------------------
+; Fonctions utiles pour la recherche d'images/de coordonnées
+; -------------------------------------------------------
+
+; Fonction : Attendre qu'une image apparaisse avec un temps d'attente maximum : cherche une image sur l'écran, renvoie ses coordonnées si il trouve sous la forme {x: foundX, y: foundY}
 FindImageTopLeft(imageName, timeout) {
     ; Construit le chemin complet de l'image
     imagePath := imageDir imageName
@@ -173,6 +198,12 @@ verif(coords) {
     }
 }
 
+; -------------------------------------------------------
+; Fonctions utiles pour la manipulation du navigateur
+; -------------------------------------------------------
+
+; Fonction : ouvrir un lien
+
 goToLink(link) {
     Log("Navigation", "Acces au lien : " link)
     Click 1365, 64
@@ -206,7 +237,7 @@ goToNeutralLink() {
     Log("Navigation", "Acces au lien neutre")
     Click 1365, 64
     Sleep, 100
-    link:= "https://app.ximi.xelya.io/N106/List/Client?Mode=List&View=Default"
+    link:= neutralLink
     Clipboard := link
     Send, ^v
     Sleep, 100
@@ -221,6 +252,24 @@ goToNeutralLink() {
     return
 }
 
+; -------------------------------------------------------
+; Fonction principale décrivant la logique de traitement d'une ligne du csv
+; -------------------------------------------------------
+
+;la fonction ouvre le csv, regarde si le statut est "td"
+; si le statut est td 
+; la fonction cherche le champs de début à modifier en cherchant l'image "debut"
+; clique à côté de l'image une fois trouvées
+; selectionne le contenu du champs en cliquant dessus 
+; copie en mémoire la valeur de début par laquelle remplacer
+; envoie controle v pour coller la nouvelle valeur
+; fait de meme pour le champs d'heure de fin 
+; cherche et clique sur l'image "enregistrer et retour"
+; cherche et clique sur le bouton confirmer si, présent : si c'est le cas elle vérifie que l'on est revenu sur l'accueil et enregistre la ligne comme "done" dans le csv
+; sinon elle cherche un bandeau d'erreur et enregistre la lgine comme en erreur dans le csv 
+
+
+
 treatLine(line,csvFile) {
     Log("Traitement", "Traitement de la ligne " line)
     result := Lire(csvFile, line)
@@ -229,7 +278,7 @@ treatLine(line,csvFile) {
     if (statut=="td")
     {
         idNum:= result[1]
-        link:="https://app.ximi.xelya.io/N106/Details/Intervention/" idNum "?Edit"
+        link:= editLink idNum "?Edit"
         do:=goToLink(link)
 
         coords := FindImageTopLeft("debut.png", 3000)
@@ -316,6 +365,12 @@ treatLine(line,csvFile) {
     return
 }
 
+; -------------------------------------------------------
+; controle
+; -------------------------------------------------------
+
+; en appuyant sur haut, on parcours le csv file et on traite ligne à ligne
+
 ~Up::
 {
     MsgBox, BEGIN
@@ -334,6 +389,7 @@ treatLine(line,csvFile) {
     return
 }
 
+; en appuyant sur bas, on arrête le script
 
 Down::
     MsgBox, FORCEEND
