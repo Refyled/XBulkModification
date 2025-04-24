@@ -9,7 +9,8 @@ global stopScript := false
 Global enableLogging := false ; Permet de toggler le logging
 Global successCount := 0
 Global errorCount := 0
-
+Global xLink := 1365
+Global yLink := 44
 
 
 ; -------------------------------------------------------
@@ -206,7 +207,7 @@ verif(coords) {
 
 goToLink(link) {
     Log("Navigation", "Acces au lien : " link)
-    Click 1365, 64
+    Click xLink, yLink
     Sleep, 50
     Clipboard := link
     Sleep, 50
@@ -217,7 +218,7 @@ goToLink(link) {
     if (verif(coords)){
         return
     }
-    Click 1365, 64
+    Click xLink, yLink
     Sleep, 400
     Clipboard := link
     Sleep, 100
