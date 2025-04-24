@@ -76,6 +76,20 @@ Global logFile := "C:\Chemin\Vers\log.csv"
 Global neutralLink := "https://..."
 Global editLink := "https://..."
 ```
+---
+
+## Coordonnées de la barre de lien
+
+Lancer le script "findcoord.ahk" en cliquant dessus
+Ouvir le navigateur
+Afficher les coordonnées de la souris avec la flèche du haut
+Amener la sourir au milieu de la barre de lien (en haut du navigateur) et noter les coordonnées x, y affichées ; 
+appuyer sur flèche du bas pour arrêter l'affichage des coordonnées
+Modifier dans le code de main.ahk (en l'ouvrant avec bloc note par exemple) et modifier les variables xLink et yLink puis enregistrer
+
+
+
+---
 
 ---
 
