@@ -51,7 +51,7 @@ Votre dossier doit contenir :
 
 ```
 📁 AHK/
-├── script.ahk           # Le script principal
+├── main.ahk           # Le script principal
 ├── list.csv             # Le fichier CSV à traiter
 ├── log.csv              # (optionnel) journal des actions
 └── Img/                 # Dossier d'images pour la reconnaissance
@@ -95,7 +95,7 @@ Attention a bien capturer le même format exact que les images originales
 
 ### Lancer le script :
 1. Ouvrez un navigateur (Chrome, Firefox...) connecté à Ximi.
-2. Double-cliquez sur `script.ahk` pour l'exécuter.
+2. Double-cliquez sur `main.ahk` pour l'exécuter.
 3. Appuyez sur la **flèche haut (↑)** pour démarrer le traitement ligne par ligne.
 
 ### Interrompre le script :
